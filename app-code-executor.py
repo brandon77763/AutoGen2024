@@ -19,7 +19,7 @@ code_executor_agent_using_docker = ConversableAgent(
     "code_executor_agent_docker",
     llm_config=False,  # Turn off LLM for this agent.
     code_execution_config={"executor": executor},  # Use the docker command line code executor.
-    human_input_mode="ALWAYS",  # Always take human input for this agent for safety.
+    human_input_mode="NEVER",  # Always take human input for this agent for safety.
 )
 
 # When the code executor is no longer used, stop it to release the resources.
@@ -49,5 +49,5 @@ code_writer_agent = ConversableAgent(
 
 chat_result = code_executor_agent_using_docker.initiate_chat(
     code_writer_agent,
-    message="Write Python code to calculate the 14th Fibonacci number.",
+    message="Write Python code to pull all the urls from this site https://washingtondc.craigslist.org/search/sss?query=computer#search=1~gallery~0~0. and list the results.",
 )
