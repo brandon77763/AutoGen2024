@@ -87,7 +87,7 @@ def query_faiss(query):
     return results
 
 # Function to handle chat interaction
-def chat_with_bot(user_message):
+def chat_with_bot(user_message, chat_history):
     history = [{"role": "user", "content": user_message}]
     try:
         print(f"User message: {user_message}")
@@ -104,28 +104,35 @@ def chat_with_bot(user_message):
             response = completion_response
 
         print(f"Bot response: {response}")
-        history.append({"role": "assistant", "content": response})
+        chat_history.append((f"You: {user_message}", f"Bot: {response}"))
+        #chat_history.append((f"Bot: {response}", "AI"))
     except Exception as e:
         error_message = f"An error occurred: {str(e)}"
         print(error_message)
         print(traceback.format_exc())
-        history.append({"role": "assistant", "content": error_message})
-    return history[-1]['content']
+        chat_history.append((f"Bot: {error_message}", ""))
+    return chat_history
 
 # Gradio interface for chat and file uploads
 with gr.Blocks() as iface:
     gr.Markdown("# Chat with AI")
     with gr.Row():
         with gr.Column():
-            query_input = gr.Textbox(lines=2, placeholder="Enter your query here...")
-            chat_button = gr.Button("Chat")
-            chat_output = gr.Textbox(lines=10, placeholder="Chatbot response...")
-            chat_button.click(chat_with_bot, inputs=query_input, outputs=chat_output)
+            chatbot = gr.Chatbot()
+            query_input = gr.Textbox(label="Enter your message")
+            chat_button = gr.Button("Send")
+
+            def submit_message(user_message, chat_history):
+                new_history = chat_with_bot(user_message, chat_history)
+                return "", new_history
+
+            query_input.submit(submit_message, [query_input, chatbot], [query_input, chatbot])
+            chat_button.click(submit_message, [query_input, chatbot], [query_input, chatbot])
         
         with gr.Column():
             file_input = gr.File()
             upload_button = gr.Button("Upload Document")
-            upload_output = gr.Textbox(lines=2, placeholder="Upload status...")
+            upload_output = gr.Textbox(label="Upload status")
             upload_button.click(embed_and_index, inputs=file_input, outputs=upload_output)
 
 iface.launch()
