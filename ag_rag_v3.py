@@ -14,7 +14,7 @@ from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProx
 from chromadb import PersistentClient
 
 # Point to the local server
-client = OpenAI(base_url="http://192.168.1.194:1234/v1", api_key="lm-studio")
+client = OpenAI(base_url="http://0.0.0.0:1234/v1", api_key="lm-studio")
 
 # Function to generate embeddings using local LLM Studio
 class LocalEmbeddingGenerator:
